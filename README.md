@@ -1,6 +1,3 @@
-# java-oop-bank-system
-Simple banking system in Java using OOP concepts, with authentication, transaction history and multiple account types.
-
 # 💰 Java Bank System
 
 A simple banking system developed in Java using Object-Oriented Programming principles.
