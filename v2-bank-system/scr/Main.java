@@ -1,1 +1,1 @@
-public
+public static
