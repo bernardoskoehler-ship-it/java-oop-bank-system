@@ -15,6 +15,14 @@ abstract class ContaBase {
         setSenha(senha);
     }
 
+    public boolean valorValido(double valor) {
+        if(valor > 0) {
+            return true;
+        }
+        System.out.println("Valor inserido invalido!");
+        return false;
+    }
+
     public boolean temTentativas() {
         if(tentativas > 0) {
             return true;
@@ -83,6 +91,54 @@ abstract class ContaBase {
             return;
         }
         setSenha(novaSenha);
+    }
+
+    public boolean podeRemoverSaldo(double valor) {
+        if(!valorValido(valor)) {
+            return false;
+        }
+        if(valor > limite) {
+            System.out.println("R$ " +valor +" esta acima do limite da conta");
+            return false;
+        }
+        if(saldo < valor) {
+            System.out.println("Nao tem saldo o suficiente!");
+            return false;
+        }
+        return true;
+    }
+    private boolean removerSaldo(double valor) {
+        if(!podeRemoverSaldo(valor)) {
+            return false;
+        }
+        System.out.println("R$ " +valor +" removido de " +getNome());
+        saldo -= valor;
+        return true;
+    }
+
+    private boolean adicionarSaldo(double valor) {
+        if(!valorValido(valor)) {
+            return false;
+        }
+        System.out.println("R$ " +valor +" adicionado a " +getNome());
+        saldo += valor;
+        return true;
+    }
+
+    public boolean sacar(double valor) {
+        return removerSaldo(valor);
+    }
+    public boolean depositar(double valor) {
+        return adicionarSaldo(valor);
+    }
+    public boolean transferir(ContaBase destino, double valor) {
+        if(sacar(valor)) {
+            destino.depositar(valor);
+            System.out.println(getNome() +" transferiu R$ " +valor +" para " +destino.getNome());
+            return true;
+        }
+        System.out.println("Nao foi possivel transferir");
+        return false;
     }
 
 }
