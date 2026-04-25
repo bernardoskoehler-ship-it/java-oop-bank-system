@@ -1,24 +1,26 @@
-# 🏦 Java Bank System V2 (Console Application)
+# 🏦 Java Bank System v2
 
-A simple banking system developed in Java using Object-Oriented Programming principles.
+An improved version of a console-based banking system built in Java, focusing on better architecture, validation, and user interaction.
 
-This project simulates basic banking operations such as account creation, deposits, withdrawals, transfers, and transaction history management through a console-based interface.
+This version enhances the original project (v1) by introducing stronger object-oriented design, safer input handling, and a fully interactive system.
 
 ---
 
-## 🚀 Features
+## 🚀 What’s New in v2
 
-* Create different types of accounts:
+This version is a major upgrade over **v1**, focusing on code quality and real-world behavior.
 
-  * Current Account
-  * Savings Account
-  * Premium Account
-* Account activation with password validation
-* Deposit and withdrawal operations
-* Money transfers between accounts
-* Transaction history tracking
-* Input validation (prevents crashes from invalid input)
-* Console-based interactive menu
+### 🔥 Key Improvements
+
+* ✅ Interactive console menu system
+* ✅ Safe input handling (no crashes on invalid input)
+* ✅ Centralized control with `Banco` class
+* ✅ Better validation across all operations
+* ✅ Consistent use of `boolean` returns for operation success/failure
+* ✅ Improved method naming (`valorPosTaxa`)
+* ✅ Account activation system with password attempts
+* ✅ Transaction history with access control (only active accounts)
+* ✅ Polymorphism for account behavior
 
 ---
 
@@ -26,21 +28,21 @@ This project simulates basic banking operations such as account creation, deposi
 
 * Object-Oriented Programming (OOP)
 
-  * Inheritance
-  * Polymorphism
-  * Encapsulation
-  * Abstraction
+  * Inheritance (`ContaBase` → account types)
+  * Polymorphism (method overriding)
+  * Encapsulation (private attributes + controlled access)
+  * Abstraction (shared behavior in base class)
 * Data Structures
 
-  * HashMap for account storage
-* Input validation using Scanner
-* Error handling (preventing NullPointerException)
+  * `HashMap` for account management
+* Input validation and error prevention
+* Console-based system design
 
 ---
 
 ## 🏗️ Project Structure
 
-```
+```id="struct-v2"
 .
 ├── ContaBase.java
 ├── ContaCorrente.java
@@ -53,37 +55,31 @@ This project simulates basic banking operations such as account creation, deposi
 
 ---
 
-## 💡 How It Works
+## ⚙️ How the System Works
 
-* The `Banco` class manages all accounts using a `HashMap`.
-* Each account type extends `ContaBase` and customizes behavior:
+* `Banco` manages all accounts and operations
+* Each account type defines its own rules:
 
   * `ContaCorrente`: allows overdraft
-  * `ContaPoupanca`: applies interest
+  * `ContaPoupanca`: generates interest
   * `ContaPremium`: reduced transaction tax
-* The `MenuBanco` class provides a user interface via terminal.
+* `MenuBanco` handles user interaction via terminal
+* All operations are validated before execution
 
 ---
 
 ## ▶️ Running the Project
 
-1. Compile all `.java` files:
-
-```bash
+```bash id="compile-v2"
 javac *.java
-```
-
-2. Run the program:
-
-```bash
 java Main
 ```
 
 ---
 
-## 🧪 Example Usage
+## 🧪 Example Menu
 
-```
+```id="menu-v2"
 1 - Create account
 2 - Activate account
 3 - Deposit
@@ -96,30 +92,47 @@ java Main
 
 ---
 
-## ⚠️ Limitations
+## 📊 v1 vs v2 Comparison
 
-* Accounts are identified by name (not realistic for production systems)
-* No data persistence (all data is lost when the program closes)
-* Console-based only (no GUI)
+| Feature                      | v1 | v2 |
+| ---------------------------- | -- | -- |
+| Basic OOP structure          | ✅  | ✅  |
+| Multiple account types       | ✅  | ✅  |
+| Transaction logic            | ✅  | ✅  |
+| Input validation             | ❌  | ✅  |
+| Interactive menu             | ❌  | ✅  |
+| Centralized system (`Banco`) | ❌  | ✅  |
+| Safe null handling           | ❌  | ✅  |
+| Boolean-based operations     | ❌  | ✅  |
+| Account activation system    | ❌  | ✅  |
+| Improved method naming       | ❌  | ✅  |
+
+---
+
+## ⚠️ Current Limitations
+
+* Accounts are identified by name
+* No persistent storage (data is lost after execution)
+* Console-only interface
 
 ---
 
 ## 🔮 Future Improvements
 
 * Automatic account ID generation
-* File or database persistence
-* Graphical interface (GUI)
-* Improved transaction system (using objects instead of Strings)
-* Authentication system (login/logout)
+* Database or file persistence
+* Login system (session-based access)
+* GUI version (JavaFX or web)
+* Better transaction modeling (using objects instead of strings)
 
 ---
 
 ## 👨‍💻 Author
 
-Developed by [Your Name]
+Developed by Bernardo Koehler
 
 ---
 
-## 📌 Notes
+## 📌 About This Project
 
-This project was built as part of a Java learning journey focused on backend development and problem-solving through practical implementations.
+This project was built as part of a Java learning journey, focusing on improving code structure, applying OOP concepts, and evolving from a simple system (v1) into a more complete and robust application (v2).
