@@ -6,6 +6,10 @@ public class ContaPoupanca extends ContaBase{
         super(nome, senha);
         this.limite = 1000;
     }
+    @Override
+    protected double valorPosTaxa(double valor) {
+        return valor;
+    }
     public boolean aplicarRendimento() {
         double rendimento = getSaldo() * taxaRendimento;
         if(rendimento <= 0) {
