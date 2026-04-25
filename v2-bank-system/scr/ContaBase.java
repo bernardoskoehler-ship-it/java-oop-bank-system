@@ -1,9 +1,11 @@
-abstract class ContaBase {
+import java.util.ArrayList;
 
+abstract class ContaBase {
+    private ArrayList<String> historico = new ArrayList<>();
     private String nome;
 
-    private int saldo;
-    protected int limite;
+    private double saldo;
+    protected double limite;
 
     private String senhaAtual;
     private int tentativas = 5;
@@ -13,6 +15,10 @@ abstract class ContaBase {
     ContaBase(String nome, String senha) {
         setNome(nome);
         setSenha(senha);
+    }
+
+    public double getSaldo() {
+        return saldo;
     }
 
     public boolean valorValido(double valor) {
@@ -31,7 +37,7 @@ abstract class ContaBase {
         return false;
     }
     public boolean verificarSenha(String senha) {
-        if(senha.equals(senhaAtual)) {
+        if(senha != null && senha.equals(senhaAtual)) {
             return true;
         }
         tentativas --;
@@ -75,16 +81,19 @@ abstract class ContaBase {
     }
     public void mudarNome(String nome) {
         if(contaEstaAtiva()) {
-            this.nome = nome;
+            setNome(nome);
         }
     }
-
+    private boolean senhaValida(String senha) {
+        return senha != null && senha.length() >= 8;
+    }
     private void setSenha(String senha) {
-        if(senha.length() >= 8) {
-            this.senhaAtual = senha;
+        if(!senhaValida(senha)) {
+            System.out.println("Senha invalida, senha padrao *12345678* adotada!");
+            this.senhaAtual = "12345678";
+            return;
         }
-        System.out.println("Senha invalida, senha padrao *12345678* adotada!");
-        this.senhaAtual = "12345678";
+        this.senhaAtual = senha;
     }
     public void mudarSenha(String senhaAtual, String novaSenha) {
         if(!verificarSenha(senhaAtual)) {
@@ -101,7 +110,7 @@ abstract class ContaBase {
             System.out.println("R$ " +valor +" esta acima do limite da conta");
             return false;
         }
-        if(saldo < valor) {
+        if(getSaldo() < valor) {
             System.out.println("Nao tem saldo o suficiente!");
             return false;
         }
@@ -116,29 +125,61 @@ abstract class ContaBase {
         return true;
     }
 
+    protected double valorTaxado(double valor) {
+        return valor * 0.85;
+    }
     private boolean adicionarSaldo(double valor) {
         if(!valorValido(valor)) {
             return false;
         }
         System.out.println("R$ " +valor +" adicionado a " +getNome());
-        saldo += valor;
+        saldo += valorTaxado(valor);
         return true;
     }
 
     public boolean sacar(double valor) {
-        return removerSaldo(valor);
+        if(!contaEstaAtiva()) {
+            return false;
+        }
+        if(!removerSaldo(valor)) {
+            return false;
+        }
+        historico.add("Saque: -" + valor);
+        return true;
     }
     public boolean depositar(double valor) {
-        return adicionarSaldo(valor);
+        if(!contaEstaAtiva()) {
+            return false;
+        }
+        if(!adicionarSaldo(valor)) {
+            return false;
+        }
+        historico.add("Depósito: +" + valor);
+        return true;
     }
     public boolean transferir(ContaBase destino, double valor) {
-        if(sacar(valor)) {
-            destino.depositar(valor);
-            System.out.println(getNome() +" transferiu R$ " +valor +" para " +destino.getNome());
-            return true;
+        if(!contaEstaAtiva()) {
+            return false;
         }
-        System.out.println("Nao foi possivel transferir");
-        return false;
+        if(!removerSaldo(valor)) {
+            System.out.println("Nao foi possivel transferir");
+            return false;
+        }
+        if(!destino.adicionarSaldo(valor)) {
+            adicionarSaldo(valor);
+            System.out.println("Nao foi possivel transferir");
+            return false;
+        }
+        historico.add("Transferencia enviada: -" + valor);
+        destino.historico.add("Transferencia recebida: +" + valor);
+        System.out.println(getNome() + " transferiu R$ " + valor + " para " + destino.getNome());
+        return true;
+    }
+
+    public void mostrarHistorico() {
+        for(int i = 0; i < historico.size(); i++) {
+            System.out.println(historico.get(i));
+        }
     }
 
 }
