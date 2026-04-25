@@ -6,7 +6,7 @@ public class ContaPremium extends ContaBase {
     }
 
     @Override
-    protected double valorTaxado(double valor) {
+    protected double valorPosTaxa(double valor) {
         return valor * 0.97;
     }
 }
