@@ -45,27 +45,24 @@ abstract class ContaBase {
         return false;
     }
 
-    protected void ativarConta(String senha) {
+    protected boolean ativarConta(String senha) {
         if(contaEstaAtiva()) {
             System.out.println("A conta ja esta ativa!");
-            return;
-        }
-        if(!temTentativas()) {
-            return;
-        }
-        if(!verificarSenha(senha)) {
-            return;
-        }
-        contaAtiva = true;
-        System.out.println("Conta: " +getNome() +" Ativa.");
-        tentativas = 5;
-    }
-    public boolean contaEstaAtiva() {
-        if(contaAtiva == false) {
-            System.out.println(nome +" ative a conta");
             return false;
         }
+        if(!temTentativas()) {
+            return false;
+        }
+        if(!verificarSenha(senha)) {
+            return false;
+        }
+        contaAtiva = true;
+        System.out.println("Conta: " +getNome() +" Ativada.");
+        tentativas = 5;
         return true;
+    }
+    public boolean contaEstaAtiva() {
+        return contaAtiva;
     }
 
     private void setNome(String nome) {
@@ -125,7 +122,7 @@ abstract class ContaBase {
         return true;
     }
 
-    protected double valorTaxado(double valor) {
+    protected double valorPosTaxa(double valor) {
         return valor * 0.85;
     }
     private boolean adicionarSaldo(double valor) {
@@ -133,12 +130,13 @@ abstract class ContaBase {
             return false;
         }
         System.out.println("R$ " +valor +" adicionado a " +getNome());
-        saldo += valorTaxado(valor);
+        saldo += valorPosTaxa(valor);
         return true;
     }
 
     public boolean sacar(double valor) {
         if(!contaEstaAtiva()) {
+            System.out.println("Conta inativa!");
             return false;
         }
         if(!removerSaldo(valor)) {
@@ -149,6 +147,7 @@ abstract class ContaBase {
     }
     public boolean depositar(double valor) {
         if(!contaEstaAtiva()) {
+            System.out.println("Conta inativa!");
             return false;
         }
         if(!adicionarSaldo(valor)) {
@@ -159,6 +158,11 @@ abstract class ContaBase {
     }
     public boolean transferir(ContaBase destino, double valor) {
         if(!contaEstaAtiva()) {
+            System.out.println("Conta inativa!");
+            return false;
+        }
+        if(destino == this) {
+            System.out.println("Nao é possivel transferir para si mesmo");
             return false;
         }
         if(!removerSaldo(valor)) {
@@ -177,6 +181,10 @@ abstract class ContaBase {
     }
 
     public void mostrarHistorico() {
+        if(!contaEstaAtiva()) {
+            System.out.println("Conta inativa!");
+            return;
+        }
         for(int i = 0; i < historico.size(); i++) {
             System.out.println(historico.get(i));
         }
