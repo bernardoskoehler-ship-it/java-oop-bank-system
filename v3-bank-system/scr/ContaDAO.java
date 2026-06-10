@@ -90,5 +90,39 @@ public class ContaDAO {
         return null;
     }
 
+    public Conta mostrarNome_TabelaConta(String nome) throws Exception {
+
+        String sql = "SELECT * FROM contas WHERE nome = ?";
+
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+
+            stmt.setString(1, nome);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                if(rs.next()) {
+                    return new Conta(
+                            rs.getInt("id"),
+                            rs.getString("nome"),
+                            rs.getString("senha"),
+                            rs.getDouble("saldo"),
+                            rs.getDouble("limite"),
+                            rs.getBoolean("contaAtiva")
+                    );
+                }
+            }
+        }
+
+        return null;
+    }
+    public void desativarTodasContas() throws Exception {
+
+        String sql = "UPDATE contas SET contaAtiva = false";
+
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.executeUpdate();
+        }
+    }
+
 
 }
