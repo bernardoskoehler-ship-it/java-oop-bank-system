@@ -1,4 +1,4 @@
-# 🏦 Java Bank System v2
+# Bank System v2
 
 An improved version of a console-based banking system built in Java, focusing on better architecture, validation, and user interaction.
 
