@@ -24,8 +24,6 @@ public class Conta {
         this.contaAtiva = contaAtiva;
     }
 
-    // Set/Get //
-
     public int getId() {
         return id;
     }
@@ -65,8 +63,6 @@ public class Conta {
         return contaAtiva;
     }
 
-    // Metodos validadores //
-
     public boolean valorValido(double valor) {
         if(valor > 0) {
             return true;
@@ -97,6 +93,9 @@ public class Conta {
     }
 
     public boolean podeRemoverSaldo(double valor) {
+        if(!contaEstaAtiva()) {
+            return false;
+        }
         if(!valorValido(valor)) {
             return false;
         }
@@ -111,14 +110,11 @@ public class Conta {
         return true;
     }
 
-    // Metodos //
-
     protected void adicionarSaldo(double valor) {
         saldo += valor;
     }
     protected void removerSaldo(double valor) {
         saldo -= valor;
     }
-
-
+    
 }
