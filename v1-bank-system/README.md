@@ -1,4 +1,4 @@
-# 💳 Bank System — v1
+# Bank System v1
 
 This is the first version of the Bank System project.
 
