@@ -29,11 +29,42 @@ public class Banco {
 
             Conta conta = dao.mostrarId_TabelaConta(id);
 
+            if(conta == null) {
+                System.out.println("Conta não encontrada.");
+                return false;
+            }
             if(conta.ativarConta(senha)) {
                 dao.atualizarContaAtiva_TabelaConta(id, true);
                 return true;
             }
             return false;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean banco_DesativarConta(int id) {
+        try {
+
+            ContaDAO dao = new ContaDAO();
+
+            Conta conta = dao.mostrarId_TabelaConta(id);
+
+            if(conta == null) {
+                System.out.println("Conta não encontrada.");
+                return false;
+            }
+
+            if(!conta.contaEstaAtiva()) {
+                System.out.println("Conta já está inativa.");
+                return false;
+            }
+
+            dao.atualizarContaAtiva_TabelaConta(id, false);
+
+            System.out.println("Logout realizado.");
+            return true;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -74,20 +105,7 @@ public class Banco {
                 System.out.println("Conta não encontrada.");
                 return false;
             }
-            if(!conta.contaEstaAtiva()) {
-                System.out.println("Conta não está ativa.");
-                return false;
-            }
-            if(valor <= 0) {
-                System.out.println("Valor inválido.");
-                return false;
-            }
-            if(conta.getLimite() < valor) {
-                System.out.println("Valor ultrapassa limite.");
-                return false;
-            }
-            if(conta.getSaldo() < valor) {
-                System.out.println("Valor maior que saldo.");
+            if(!conta.podeRemoverSaldo(valor)) {
                 return false;
             }
 
@@ -95,6 +113,55 @@ public class Banco {
             dao.atualizarSaldo_TabelaConta(id, conta.getSaldo());
 
             return true;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean banco_transferir(int id, int destino, double valor) {
+        try {
+            ContaDAO dao = new ContaDAO();
+            Conta conta = dao.mostrarId_TabelaConta(id);
+            Conta contaDestino = dao.mostrarId_TabelaConta(destino);
+
+            if(conta == null) {
+                System.out.println("Conta origem não encontrada.");
+                return false;
+            }
+            if(contaDestino == null) {
+                System.out.println("Conta destino não encontrada.");
+                return false;
+            }
+            if(id == destino) {
+                System.out.println("Não é possivel transferir para a própia conta.");
+                return false;
+            }
+            if(!conta.podeRemoverSaldo(valor)) {
+                return false;
+            }
+
+            conta.removerSaldo(valor);
+            contaDestino.adicionarSaldo(valor);
+
+            dao.atualizarSaldo_TabelaConta(id, conta.getSaldo());
+            dao.atualizarSaldo_TabelaConta(destino, contaDestino.getSaldo());
+
+            return true;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void banco_MostrarConta(int id) {
+        try {
+            ContaDAO dao = new ContaDAO();
+            Conta conta = dao.mostrarId_TabelaConta(id);
+
+            System.out.println(conta.getId());
+            System.out.println(conta.getNome());
+            System.out.println(conta.getSaldo());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
