@@ -2,111 +2,147 @@ package org.example;
 
 import java.util.Scanner;
 
-public class MenuBanco {
+public class Menu {
     Scanner scanner = new Scanner(System.in);
 
-    private int idLogado = -1;
-
-    private double lerValor() {
-        System.out.println("Insira um valor:");
-        double valor = scanner.nextDouble();
-        scanner.nextLine();
-        return valor;
+    public boolean nomeValido(String nome) {
+        return nome != null && !nome.trim().isEmpty();
     }
 
-    public void iniciarBanco() {
-        idLogado = -1;
+    public boolean senhaValida(String senha) {
+        return senha != null && !senha.trim().isEmpty() && senha.length() > 7;
+    }
 
-        try {
-            Banco banco = new Banco();
-            ContaDAO dao = new ContaDAO();
+    public int lerEscolha() {
+        while (!scanner.hasNextInt()) {
+            System.out.println("Por favor, digite um número válido!");
+            scanner.next();
+        }
+        int escolha = scanner.nextInt();
+        scanner.nextLine(); // Limpa o buffer do Enter
+        return escolha;
+    }
 
-            dao.desativarTodasContas();
+    public String lerString() {
+        return scanner.nextLine(); // Apenas lê a String digitada
+    }
 
-            System.out.println("Bem vindo ao Banco BBE (Blumenau Bank Enterprices).");
-            System.out.println("Menu:");
-            System.out.println("1 - Login");
-            System.out.println("2 - Criar Conta");
-            System.out.println("----------");
-            while(true) {
-                int escolha = scanner.nextInt();
-                scanner.nextLine();
+    public Conta menuLogin(Biblioteca biblioteca){
+        while(true) {
+            System.out.println("--- Login ---");
+            System.out.println("1: Entrar (Login)");
+            System.out.println("2: Criar Conta");
+            System.out.println("3: Sair");
+            System.out.print("Digite sua escolha: ");
+            int escolha = lerEscolha();
+            System.out.println("---");
 
-                if(escolha == 1) {
-                    System.out.println("Digite seu id:");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
+            if (escolha == 3) {
+                return null;
+            }
+            if (escolha < 1 || escolha > 2) {
+                System.out.println("Opção inválida! Tente novamente.");
+                continue;
+            }
 
-                    System.out.println("Digite sua senha:");
-                    String senha = scanner.nextLine();
+            // --- OPÇÃO 1: LOGIN ---
+            if (escolha == 1) {
+                System.out.println("Insira seu Email (ou digite 'sair' para voltar):");
+                String email = lerString();
+                if(email.equalsIgnoreCase("sair")) continue;
 
-                    if(banco.banco_AtivarConta(id, senha)) {
-                        idLogado = id;
-                        System.out.println("Login realizado!");
-                        break;
-                    }
+                Cliente clienteEncontrado = biblioteca.buscarClientePorEmail(email);
+                if (clienteEncontrado == null) {
+                    System.out.println("Erro: Nenhum cliente cadastrado com este e-mail.\n");
+                    continue; // Volta para o menu principal do Login
+                }
 
-                    System.out.println("Falha no login.");
-                    continue;
-                }else if(escolha == 2) {
+                System.out.println("Insira sua Senha:");
+                String senha = lerString();
 
-                    System.out.println("Digite seu nome:");
-                    String nome = scanner.nextLine();
-
-                    System.out.println("Digite sua senha:");
-                    String senha = scanner.nextLine();
-
-                    if(banco.banco_CriarConta(nome, senha)) {
-                        System.out.println("Conta criada!");
-                        System.out.println("Agora faça login na sua conta para prosseguir.");
-                    }
-                    continue;
-                }else {
-                    continue;
+                if (clienteEncontrado.getSenha().equals(senha)) {
+                    System.out.println("Login realizado com sucesso! Bem-vindo, " + clienteEncontrado.getNome() + "\n");
+                    return clienteEncontrado;
+                } else {
+                    System.out.println("Senha incorreta! Retornando ao menu.\n");
                 }
             }
 
-            while(true) {
-            System.out.println("----------");
-            System.out.println("Menu:");
-            System.out.println("1 - Depositar");
-            System.out.println("2 - Sacar");
-            System.out.println("3 - Transferir");
-            System.out.println("4 - Ver Conta");
-            System.out.println("5 - Logout");
-            System.out.println("----------");
+            // --- OPÇÃO 2: CADASTRO ---
+            if(escolha == 2) {
+                String nome, email, senha;
 
-                int escolha = scanner.nextInt();
-                scanner.nextLine();
-                 if(escolha == 1 ) {
-                     double valor = lerValor();
+                // Valida Nome
+                while (true) {
+                    System.out.println("Inserir um nome:");
+                    nome = lerString();
+                    if (nomeValido(nome)) break;
+                    System.out.println("Nome inválido! Não pode ser vazio.");
+                }
 
-                     banco.banco_depositar(idLogado, valor);
-                     continue;
-                 }else if(escolha == 2) {
-                     double valor = lerValor();
+                // Valida Email
+                while (true) {
+                    System.out.println("Inserir seu e-mail:");
+                    email = lerString();
+                    if (!nomeValido(email)) {
+                        System.out.println("E-mail inválido!");
+                        continue;
+                    }
+                    if (biblioteca.buscarClientePorEmail(email) != null) {
+                        System.out.println("Este e-mail já está cadastrado!");
+                        continue;
+                    }
+                    break;
+                }
 
-                     banco.banco_sacar(idLogado, valor);
-                     continue;
-                 }else if(escolha == 3) {
-                     double valor = lerValor();
+                // Valida Senha
+                while (true) {
+                    System.out.println("Crie uma senha (mínimo 8 caracteres):");
+                    senha = lerString();
+                    if (senhaValida(senha)) break;
+                    System.out.println("Senha inválida! Deve conter no mínimo 8 caracteres.");
+                }
 
-                     System.out.println("Insira a conta destino:");
-                     int idDestino = scanner.nextInt();
-                     scanner.nextLine();
-
-                     banco.banco_transferir(idLogado, idDestino, valor);
-                     continue;
-                 }else if(escolha == 4) {
-                     banco.banco_MostrarConta(idLogado);
-                 }else if(escolha == 5) {
-                     banco.banco_DesativarConta(idLogado);
-                     idLogado = -1;
-                     break;
-                 }
+                biblioteca.cadastrarCliente(nome, email, senha);
+                System.out.println("Conta criada com sucesso!");
+                return biblioteca.buscarClientePorEmail(email);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        }
+    }
+    
+    public void menuCliente() {
+        
+    }
+    
+    public void menuAdministrador() {
+        
+    }
+
+    public void menuBiblioteca(Biblioteca biblioteca) {
+        Conta conta = menuLogin(biblioteca);
+
+        // Se o login falhar ou o usuário decidir sair, conta será null
+        if (conta == null) {
+            System.out.println("Encerrando o programa...");
+            return;
+        }
+        
+        // Verifica se a conta logada é uma instância de Cliente
+        if (conta instanceof Cliente) {
+            // Faz o "Casting" (avisa o Java para tratar a 'conta' especificamente como Cliente)
+            Cliente clienteLogado = (Cliente) conta;
+
+            System.out.println("\n--- ÁREA DO CLIENTE ---");
+            // Aqui você chama o menu específico do cliente, ex:
+            // menuCliente(clienteLogado, biblioteca);
+        }
+        // Verifica se a conta logada é uma instância de Administrador
+        else if (conta instanceof Administrador) {
+            Administrador adminLogado = (Administrador) conta;
+
+            System.out.println("\n--- ÁREA DO ADMINISTRADOR ---");
+            // Aqui você chama o menu específico do administrador, ex:
+            // menuAdmin(adminLogado, biblioteca);
         }
     }
 }
